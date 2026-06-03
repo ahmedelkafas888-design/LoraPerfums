@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LORA PARFUMS | Haute Parfumerie</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Montserrat:wght@200;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header>
+        <div class="nav-container">
+            <a href="index.html" class="logo">LORA PARFUMS</a>
+            <nav>
+                <a href="index.html" class="active">Home</a>
+                <a href="products.html?category=all">Collection</a>
+                <a href="products.html?category=Women">Women</a>
+                <a href="products.html?category=Men">Men</a>
+                <a href="admin.html">Admin</a>
+            </nav>
+            <div class="nav-icons">
+                <a href="cart.html" class="cart-icon-wrapper">
+                    🛒 <span id="cart-badge" class="cart-badge">0</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+            <span>ELEGANCE IN A BOTTLE</span>
+            <h1>The Art of Essence</h1>
+            <p>Discover our exclusive luxury collection crafted by master perfumers.</p>
+            <a href="products.html" class="btn">Explore Collection</a>
+        </div>
+    </section>
+
+    <section class="container categories-grid">
+        <div class="category-card" onclick="window.location.href='products.html?category=Women'">
+            <img src="https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=800&q=80" alt="Pour Femme">
+            <div class="category-overlay">
+                <h3>POUR FEMME</h3>
+            </div>
+        </div>
+        <div class="category-card" onclick="window.location.href='products.html?category=Men'">
+            <img src="https://images.unsplash.com/photo-1523293182086-7651a899d37f?auto=format&fit=crop&w=800&q=80" alt="Pour Homme">
+            <div class="category-overlay">
+                <h3>POUR HOMME</h3>
+            </div>
+        </div>
+    </section>
+
+    <section class="container">
+        <h2 class="section-title">The Featured Masterpieces</h2>
+        <div id="featured-products" class="products-grid">
+            </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 LORA PARFUMS. All Rights Reserved.</p>
+    </footer>
+
+    <script src="app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            initApp();
+            const products = getProducts();
+            const featuredContainer = document.getElementById('featured-products');
+            // Show first 4 items as featured
+            products.slice(0, 4).forEach(product => {
+                featuredContainer.innerHTML += createProductCard(product);
+            });
+            updateCartBadge();
+        });
+    </script>
+</body>
+</html>
