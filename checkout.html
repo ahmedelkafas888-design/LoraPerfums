@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Checkout | LORA PARFUMS</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header>
+        <div class="nav-container">
+            <a href="index.html" class="logo">LORA PARFUMS</a>
+        </div>
+    </header>
+
+    <section class="container checkout-container">
+        <h1 class="section-title">Shipping & Logistics</h1>
+        
+        <form id="checkout-form" onsubmit="processOrder(event)">
+            <div class="form-group">
+                <label for="fullName">Full Name</label>
+                <input type="text" id="fullName" required placeholder="Lord / Lady Full Name">
+            </div>
+            <div class="form-group">
+                <label for="phone">Phone Number</label>
+                <input type="tel" id="phone" required placeholder="e.g., +201208711729">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="country">Country</label>
+                    <input type="text" id="country" value="Egypt" required readonly>
+                </div>
+                <div class="form-group">
+                    <label for="governorate">Governorate</label>
+                    <select id="governorate" required>
+                        <option value="" disabled selected>Select Governorate</option>
+                        <option value="Cairo">Cairo</option>
+                        <option value="Giza">Giza</option>
+                        <option value="Alexandria">Alexandria</option>
+                        <option value="Dakahlia">Dakahlia</option>
+                        <option value="Sharqia">Sharqia</option>
+                        <option value="Gharbia">Gharbia</option>
+                        <option value="Qalyubia">Qalyubia</option>
+                        <option value="Beheira">Beheira</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="city">City</label>
+                    <input type="text" id="city" required placeholder="City name">
+                </div>
+                <div class="form-group">
+                    <label for="address">Full Address</label>
+                    <input type="text" id="address" required placeholder="Street name, Building number, Apartment">
+                </div>
+            </div>
+            
+            <button type="submit" class="btn order-submit-btn">Confirm Order & Open WhatsApp</button>
+        </form>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 LORA PARFUMS. All Rights Reserved.</p>
+    </footer>
+
+    <script src="app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            initApp();
+            if(getCart().length === 0) {
+                window.location.href = 'cart.html';
+            }
+        });
+
+        function processOrder(e) {
+            e.preventDefault();
+            
+            const customer = {
+                name: document.getElementById('fullName').value,
+                phone: document.getElementById('phone').value,
+                country: document.getElementById('country').value,
+                governorate: document.getElementById('governorate').value,
+                city: document.getElementById('city').value,
+                address: document.getElementById('address').value
+            };
+
+            const cart = getCart();
+            const products = getProducts();
+            let total = 0;
+            let itemsString = "";
+
+            cart.forEach((item, index) => {
+                const prod = products.find(p => p.id === item.id);
+                if(prod) {
+                    const linePrice = prod.price * item.quantity;
+                    total += linePrice;
+                    itemsString += `${index + 1}. ${prod.name} x${item.quantity} - $${linePrice.toFixed(2)}\n`;
+                }
+            });
+
+            // LocalStorage Order Backup Entry
+            const orders = JSON.parse(localStorage.getItem('lora_orders')) || [];
+            orders.push({
+                id: 'ORD-' + Date.now(),
+                customer: customer,
+                items: cart,
+                total: total,
+                date: new Date().toLocaleDateString()
+            });
+            localStorage.setItem('lora_orders', JSON.stringify(orders));
+
+            // Generate WhatsApp Text String
+            const waMessage = `✨ *NEW LUXURY ORDER - LORA PARFUMS* ✨\n\n` +
+                              `👤 *Customer Info:*\n` +
+                              `Name: ${customer.name}\n` +
+                              `Phone: ${customer.phone}\n` +
+                              `Destination: ${customer.address}, ${customer.city}, ${customer.governorate}, ${customer.country}\n\n` +
+                              `🛍️ *Order Breakdown:*\n` +
+                              `${itemsString}\n` +
+                              `💰 *Grand Total:* $${total.toFixed(2)}\n\n` +
+                              `Thank you for choosing luxury.`;
+
+            const encodedMessage = encodeURIComponent(waMessage);
+            const waUrl = `https://wa.me/201208711729?text=${encodedMessage}`;
+
+            // Clear Cart
+            localStorage.removeItem('lora_cart');
+            
+            // Redirect
+            window.open(waUrl, '_blank');
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>
