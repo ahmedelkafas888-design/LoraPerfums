@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Vanity Case | LORA PARFUMS</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header>
+        <div class="nav-container">
+            <a href="index.html" class="logo">LORA PARFUMS</a>
+            <nav>
+                <a href="index.html">Home</a>
+                <a href="products.html?category=all">Collection</a>
+            </nav>
+            <div class="nav-icons">
+                <a href="cart.html" class="cart-icon-wrapper active">
+                    🛒 <span id="cart-badge" class="cart-badge">0</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <section class="container">
+        <h1 class="section-title">Your Selection</h1>
+        <div class="cart-layout">
+            <div id="cart-items-list" class="cart-items">
+                </div>
+            <div class="cart-summary-box">
+                <h3>Order Summary</h3>
+                <hr>
+                <div class="summary-row">
+                    <span>Subtotal</span>
+                    <span id="cart-subtotal">$0.00</span>
+                </div>
+                <div class="summary-row">
+                    <span>Shipping</span>
+                    <span>Complimentary</span>
+                </div>
+                <hr>
+                <div class="summary-row total-row">
+                    <span>Total</span>
+                    <span id="cart-total">$0.00</span>
+                </div>
+                <a href="checkout.html" class="btn checkout-btn" id="checkout-link-btn">Proceed to Checkout</a>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 LORA PARFUMS. All Rights Reserved.</p>
+    </footer>
+
+    <script src="app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            initApp();
+            renderCartPage();
+        });
+
+        function renderCartPage() {
+            updateCartBadge();
+            const cart = getCart();
+            const products = getProducts();
+            const container = document.getElementById('cart-items-list');
+            const checkoutBtn = document.getElementById('checkout-link-btn');
+            
+            if (cart.length === 0) {
+                container.innerHTML = `<p style="padding: 2rem 0; font-style: italic;">Your shopping cart is empty.</p>`;
+                document.getElementById('cart-subtotal').innerText = '$0.00';
+                document.getElementById('cart-total').innerText = '$0.00';
+                checkoutBtn.style.pointerEvents = 'none';
+                checkoutBtn.style.opacity = '0.5';
+                return;
+            }
+
+            checkoutBtn.style.pointerEvents = 'auto';
+            checkoutBtn.style.opacity = '1';
+            container.innerHTML = '';
+            let total = 0;
+
+            cart.forEach(item => {
+                const product = products.find(p => p.id === item.id);
+                if(product) {
+                    const itemTotal = product.price * item.quantity;
+                    total += itemTotal;
+                    container.innerHTML += `
+                        <div class="cart-item-card">
+                            <img src="${product.image}" alt="${product.name}">
+                            <div class="cart-item-details">
+                                <h4>${product.name}</h4>
+                                <p>Category: ${product.category}</p>
+                                <span class="cart-item-price">$${parseFloat(product.price).toFixed(2)}</span>
+                            </div>
+                            <div class="cart-item-actions">
+                                <div class="qty-selector">
+                                    <button onclick="changeQty('${product.id}', -1)">-</button>
+                                    <input type="text" value="${item.quantity}" readonly>
+                                    <button onclick="changeQty('${product.id}', 1)">+</button>
+                                </div>
+                                <button class="delete-item-btn" onclick="deleteFromCart('${product.id}')">Remove</button>
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+
+            document.getElementById('cart-subtotal').innerText = `$${total.toFixed(2)}`;
+            document.getElementById('cart-total').innerText = `$${total.toFixed(2)}`;
+        }
+
+        function changeQty(id, delta) {
+            updateCartItemQty(id, delta);
+            renderCartPage();
+        }
+
+        function deleteFromCart(id) {
+            removeFromCart(id);
+            renderCartPage();
+        }
+    </script>
+</body>
+</html>
