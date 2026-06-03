@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maison Dashboard | LORA PARFUMS</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body class="admin-body">
+
+    <div id="auth-screen" class="auth-modal">
+        <div class="auth-box">
+            <h2>Maison Verification</h2>
+            <p>Access limited strictly to authorized entities.</p>
+            <input type="email" id="auth-email" placeholder="Enter Administrative Email">
+            <button class="btn" onclick="verifyAdminAccess()">Grant Clearance</button>
+            <div id="auth-error" class="error-msg">Access Denied: Non-authorized Email</div>
+        </div>
+    </div>
+
+    <div id="admin-panel" class="admin-layout" style="display: none;">
+        <aside class="admin-sidebar">
+            <div class="sidebar-brand">LORA ADMIN</div>
+            <ul class="sidebar-menu">
+                <li onclick="switchAdminTab('dashboard')" id="tab-dashboard" class="active">Dashboard</li>
+                <li onclick="switchAdminTab('products')" id="tab-products">Manage Products</li>
+                <li onclick="switchAdminTab('add-product')" id="tab-add-product">Add New Fragrance</li>
+                <li onclick="switchAdminTab('orders')" id="tab-orders">View Orders</li>
+            </ul>
+            <button class="logout-btn" onclick="logoutAdmin()">Exit Session</button>
+        </aside>
+
+        <main class="admin-content">
+            <section id="content-dashboard" class="admin-section">
+                <h2>Operational Briefing</h2>
+                <div class="metrics-row">
+                    <div class="metric-card"><h3 id="stat-products">0</h3><p>Fragrances Registered</p></div>
+                    <div class="metric-card"><h3 id="stat-orders">0</h3><p>Orders Logged</p></div>
+                    <div class="metric-card"><h3 id="stat-revenue">$0.00</h3><p>Total Booked Revenue</p></div>
+                </div>
+            </section>
+
+            <section id="content-products" class="admin-section" style="display:none;">
+                <h2>Fragrance Assets</h2>
+                <div class="admin-products-grid" id="admin-catalog-view"></div>
+            </section>
+
+            <section id="content-add-product" class="admin-section" style="display:none;">
+                <h2 id="form-action-title">Register Masterpiece Asset</h2>
+                <form id="product-form" onsubmit="saveProduct(event)">
+                    <input type="hidden" id="prod-id">
+                    <div class="form-group">
+                        <label>Fragrance Name</label>
+                        <input type="text" id="prod-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Direct Image Link (URL)</label>
+                        <input type="url" id="prod-image" required placeholder="https://unsplash.com/...">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Price ($)</label>
+                            <input type="number" step="0.01" id="prod-price" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Olfactory Line</label>
+                            <select id="prod-category" required>
+                                <option value="Women">Women Collection</option>
+                                <option value="Men">Men Collection</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Aromatic Composition Description</label>
+                        <textarea id="prod-description" rows="4" required></textarea>
+                    </div>
+                    <button type="submit" class="btn">Commit Dataset to Vault</button>
+                    <button type="button" class="btn" style="background:#ccc; color:#000; margin-left:1rem;" onclick="resetForm()" id="cancel-edit-btn">Clear Form</button>
+                </form>
+            </section>
+
+            <section id="content-orders" class="admin-section" style="display:none;">
+                <h2>Logged Orders Database</h2>
+                <div style="overflow-x: auto;">
+                    <table class="orders-table">
+                        <thead>
+                            <tr>
+                                <th>Order Code</th>
+                                <th>Client Details</th>
+                                <th>Date</th>
+                                <th>Financial Value</th>
+                            </tr>
+                        </thead>
+                        <tbody id="orders-table-rows"></tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            initApp();
+            if(sessionStorage.getItem('lora_admin_auth') === 'true') {
+                showAdminPanel();
+            }
+        });
+
+        function verifyAdminAccess() {
+            const email = document.getElementById('auth-email').value;
+            if(email === 'ahmedelkafas888@gmail.com') {
+                sessionStorage.setItem('lora_admin_auth', 'true');
+                showAdminPanel();
+            } else {
+                document.getElementById('auth-error').style.display = 'block';
+            }
+        }
+
+        function logoutAdmin() {
+            sessionStorage.removeItem('lora_admin_auth');
+            window.location.reload();
+        }
+
+        function showAdminPanel() {
+            document.getElementById('auth-screen').style.display = 'none';
+            document.getElementById('admin-panel').style.display = 'flex';
+            loadAdminStats();
+            renderAdminProducts();
+            renderAdminOrders();
+        }
+
+        function switchAdminTab(tabName) {
+            document.querySelectorAll('.admin-section').forEach(sec => sec.style.display = 'none');
+            document.querySelectorAll('.sidebar-menu li').forEach(li => li.classList.remove('active'));
+            
+            document.getElementById(`content-${tabName}`).style.display = 'block';
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+        }
+
+        function loadAdminStats() {
+            const products = getProducts();
+            const orders = JSON.parse(localStorage.getItem('lora_orders')) || [];
+            const revenue = orders.reduce((sum, o) => sum + o.total, 0);
+
+            document.getElementById('stat-products').innerText = products.length;
+            document.getElementById('stat-orders').innerText = orders.length;
+            document.getElementById('stat-revenue').innerText = `$${revenue.toFixed(2)}`;
+        }
+
+        function renderAdminProducts() {
+            const products = getProducts();
+            const container = document.getElementById('admin-catalog-view');
+            container.innerHTML = '';
+            
+            products.forEach(p => {
+                container.innerHTML += `
+                    <div class="admin-prod-card">
+                        <img src="${p.image}" alt="${p.name}">
+                        <div>
+                            <h4>${p.name}</h4>
+                            <p>$${parseFloat(p.price).toFixed(2)} | ${p.category}</p>
+                            <button class="edit-btn" onclick="setupEditProduct('${p.id}')">Modify</button>
+                            <button class="delete-btn" onclick="executeDeleteProduct('${p.id}')">Expel</button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function renderAdminOrders() {
+            const orders = JSON.parse(localStorage.getItem('lora_orders')) || [];
+            const tableBody = document.getElementById('orders-table-rows');
+            tableBody.innerHTML = '';
+
+            if(orders.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="4" style="text-align:center; font-style:italic;">No logged operations.</td></tr>`;
+                return;
+            }
+
+            orders.forEach(o => {
+                tableBody.innerHTML += `
+                    <tr>
+                        <td><strong>${o.id}</strong></td>
+                        <td>
+                            <strong>${o.customer.name}</strong><br>
+                            ${o.customer.phone}<br>
+                            ${o.customer.city}, ${o.customer.governorate}
+                        </td>
+                        <td>${o.date}</td>
+                        <td><strong>$${parseFloat(o.total).toFixed(2)}</strong></td>
+                    </tr>
+                `;
+            });
+        }
+
+        function saveProduct(e) {
+            e.preventDefault();
+            const id = document.getElementById('prod-id').value;
+            const name = document.getElementById('prod-name').value;
+            const image = document.getElementById('prod-image').value;
+            const price = parseFloat(document.getElementById('prod-price').value);
+            const category = document.getElementById('prod-category').value;
+            const description = document.getElementById('prod-description').value;
+
+            let products = getProducts();
+
+            if(id) {
+                // Edit Entry
+                products = products.map(p => p.id === id ? {id, name, image, price, category, description} : p);
+            } else {
+                // New Entry
+                products.push({
+                    id: 'PROD-' + Date.now(),
+                    name, image, price, category, description
+                });
+            }
+
+            localStorage.setItem('lora_products', JSON.stringify(products));
+            resetForm();
+            loadAdminStats();
+            renderAdminProducts();
+            switchAdminTab('products');
+        }
+
+        function setupEditProduct(id) {
+            const product = getProducts().find(p => p.id === id);
+            if(product) {
+                document.getElementById('prod-id').value = product.id;
+                document.getElementById('prod-name').value = product.name;
+                document.getElementById('prod-image').value = product.image;
+                document.getElementById('prod-price').value = product.price;
+                document.getElementById('prod-category').value = product.category;
+                document.getElementById('prod-description').value = product.description;
+
+                document.getElementById('form-action-title').innerText = "Modify Formulation Data Asset";
+                switchAdminTab('add-product');
+            }
+        }
+
+        function executeDeleteProduct(id) {
+            if(confirm('Are you absolutely certain you wish to purge this product asset line?')) {
+                let products = getProducts();
+                products = products.filter(p => p.id !== id);
+                localStorage.setItem('lora_products', JSON.stringify(products));
+                loadAdminStats();
+                renderAdminProducts();
+            }
+        }
+
+        function resetForm() {
+            document.getElementById('product-form').reset();
+            document.getElementById('prod-id').value = '';
+            document.getElementById('form-action-title').innerText = "Register Masterpiece Asset";
+        }
+    </script>
+</body>
+</html>
