@@ -1,0 +1,179 @@
+:root {
+    --bg-white: #ffffff;
+    --bg-light: #fbfbf9;
+    --luxury-black: #111111;
+    --accent-gold: #d4af37;
+    --accent-gold-hover: #bfa030;
+    --text-dark: #1c1c1c;
+    --text-muted: #767676;
+    --border-light: #e8e8e3;
+    --border-gold: rgba(212, 175, 55, 0.3);
+    --system-red: #bc2c2c;
+    --system-green: #2c8c5c;
+    --font-serif: 'Marcellus', serif;
+    --font-sans: 'Tajawal', sans-serif;
+    --transition-lux: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--bg-white);
+    color: var(--text-dark);
+    font-family: var(--font-serif);
+    overflow-x: hidden;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+}
+
+body[dir="rtl"] {
+    font-family: var(--font-sans);
+}
+
+.hamburger-line {
+    width: 22px;
+    height: 1px;
+    background-color: var(--luxury-black);
+    transition: var(--transition-lux);
+}
+
+.mobile-menu-active .line1 { transform: translateY(5px) rotate(45deg); }
+.mobile-menu-active .line2 { opacity: 0; }
+.mobile-menu-active .line3 { transform: translateY(-5px) rotate(-45deg); }
+
+.hero-gradient {
+    background: radial-gradient(circle, rgba(20,20,20,0.1) 0%, rgba(10,10,10,0.95) 90%);
+}
+
+.lux-card {
+    background: var(--bg-white);
+    border: 1px solid var(--border-light);
+    transition: var(--transition-lux);
+    position: relative;
+    overflow: hidden;
+}
+
+.lux-card:hover {
+    border-color: var(--accent-gold);
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.04);
+}
+
+.lux-btn {
+    background: var(--luxury-black);
+    color: var(--bg-white);
+    border: 1px solid var(--luxury-black);
+    padding: 0.75rem 2rem;
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: var(--transition-lux);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0px;
+}
+
+.lux-btn:hover {
+    background: transparent;
+    color: var(--luxury-black);
+}
+
+.lux-btn-gold {
+    background: transparent;
+    color: var(--accent-gold);
+    border: 1px solid var(--accent-gold);
+    padding: 0.75rem 2rem;
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: var(--transition-lux);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0px;
+}
+
+.lux-btn-gold:hover {
+    background: var(--accent-gold);
+    color: white;
+}
+
+.lux-input {
+    width: 100%;
+    background: var(--bg-light);
+    border: 1px solid var(--border-light);
+    color: var(--text-dark);
+    padding: 0.85rem 1.25rem;
+    font-size: 0.85rem;
+    transition: var(--transition-lux);
+    border-radius: 0px;
+}
+
+.lux-input:focus {
+    outline: none;
+    border-color: var(--accent-gold);
+    background: var(--bg-white);
+}
+
+@keyframes flyToCart {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(var(--x), var(--y)) scale(0.1);
+        opacity: 0;
+    }
+}
+
+.animating-product-node {
+    position: fixed;
+    z-index: 9999;
+    pointer-events: none;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--accent-gold);
+}
+
+.toast-container {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 10000;
+    pointer-events: none;
+}
+
+body[dir="rtl"] .toast-container {
+    right: auto;
+    left: 2rem;
+}
+
+.toast-node {
+    background: var(--luxury-black);
+    color: white;
+    padding: 1rem 2rem;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    border-left: 3px solid var(--accent-gold);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    margin-top: 0.5rem;
+    animation: slideInUp 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+body[dir="rtl"] .toast-node {
+    border-left: none;
+    border-right: 3px solid var(--accent-gold);
+}
+
+@keyframes slideInUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
