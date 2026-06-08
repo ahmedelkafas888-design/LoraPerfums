@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Your Bag Allocation | LORA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="antialiased text-neutral-900 bg-white">
+
+    <header class="fixed top-0 left-0 w-full z-50 bg-white/95 backdrop-blur-md border-b border-neutral-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between relative">
+            <button id="globalLangToggle" class="text-xs tracking-widest font-bold text-amber-600 hover:text-black transition">العربية</button>
+            <a href="index.html" class="absolute left-1/2 -translate-x-1/2 text-2xl sm:text-3xl tracking-[0.3em] font-light text-neutral-900">LORA</a>
+            
+            <nav class="hidden md:flex items-center gap-8 ml-auto mr-12">
+                <a href="index.html" class="text-xs tracking-widest uppercase hover:text-amber-600 transition text-neutral-500" data-i18n="navHome">Home</a>
+                <a href="products.html" class="text-xs tracking-widest uppercase hover:text-amber-600 transition text-neutral-500" data-i18n="navProducts">Fragrances</a>
+                <a href="wishlist.html" class="text-xs tracking-widest uppercase hover:text-amber-600 transition text-neutral-500" data-i18n="navWishlist">Wishlist</a>
+                <a href="admin.html" class="text-xs tracking-widest uppercase hover:text-amber-600 transition text-neutral-500" data-i18n="navAdmin">Atelier Vault</a>
+            </nav>
+
+            <div class="flex items-center gap-4 sm:gap-6 z-10">
+                <a href="wishlist.html" class="relative text-neutral-800 hover:text-amber-600 transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                    <span id="wishlistBadgeCount" class="absolute -top-2 -right-2 bg-amber-500 text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-sans">0</span>
+                </a>
+                <a href="cart.html" id="globalCartAnchor" class="relative text-neutral-800 hover:text-amber-600 transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+                    <span id="cartBadgeCount" class="absolute -top-2 -right-2 bg-neutral-900 text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-sans">0</span>
+                </a>
+                <button id="mobileNavTrigger" class="md:hidden flex flex-col gap-[4px] justify-center items-center w-6 h-6">
+                    <span class="hamburger-line line1"></span>
+                    <span class="hamburger-line line2"></span>
+                    <span class="hamburger-line line3"></span>
+                </button>
+            </div>
+        </div>
+        <div id="mobileExpandedNavPane" class="hidden md:hidden border-t border-neutral-100 bg-white px-4 py-6 space-y-4 shadow-xl">
+            <a href="index.html" class="block text-xs tracking-widest uppercase text-neutral-500 py-2" data-i18n="navHome">Home</a>
+            <a href="products.html" class="block text-xs tracking-widest uppercase text-neutral-500 py-2" data-i18n="navProducts">Fragrances</a>
+            <a href="wishlist.html" class="block text-xs tracking-widest uppercase text-neutral-500 py-2" data-i18n="navWishlist">Wishlist</a>
+            <a href="admin.html" class="block text-xs tracking-widest uppercase text-neutral-500 py-2" data-i18n="navAdmin">Atelier Vault</a>
+        </div>
+    </header>
+
+    <section class="relative h-[30vh] bg-neutral-950 flex items-center justify-center text-center overflow-hidden pt-20">
+        <div class="absolute inset-0 z-0">
+            <img src="https://images.unsplash.com/photo-1547887537-6158d64c35b3?auto=format&fit=crop&w=1200&q=80" class="w-full h-full object-cover opacity-20 mix-blend-luminosity">
+        </div>
+        <div class="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent z-10"></div>
+        <div class="relative z-20 px-4">
+            <h1 class="text-3xl sm:text-4xl tracking-widest uppercase font-light text-white" id="cartHeroTitle"></h1>
+        </div>
+    </section>
+
+    <main class="pb-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            <div id="cartPageItemsContainerNode" class="lg:col-span-8 space-y-4"></div>
+            
+            <div class="lg:col-span-4 bg-white border border-neutral-200 p-6 sm:p-8 space-y-6 shadow-sm rounded-none">
+                <div class="flex items-center gap-3 border-b border-neutral-200 pb-4">
+                    <svg class="w-6 h-6 text-amber-600 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                    </svg>
+                    <h3 class="text-xs tracking-widest uppercase text-neutral-800 font-bold" data-i18n="orderSummary">Summary Total</h3>
+                </div>
+                <div class="flex justify-between items-center text-xl font-bold text-neutral-900 font-mono">
+                    <span class="font-serif font-light text-sm uppercase tracking-wider text-neutral-500" data-i18n="totalVal">Total Cost</span>
+                    <span id="cartComputedSummaryTotalValueNode">0 EGP</span>
+                </div>
+                <div class="pt-2">
+                    <a href="checkout.html" class="lux-btn w-full text-center text-xs tracking-widest font-medium py-4" data-i18n="checkoutBtn">Proceed to Checkout</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="toast-container" id="toastContainerStack"></div>
+
+    <script type="module" src="firebase.js"></script>
+    <script type="module" src="script.js"></script>
+    <script type="module" src="cart.js"></script>
+</body>
+</html>
